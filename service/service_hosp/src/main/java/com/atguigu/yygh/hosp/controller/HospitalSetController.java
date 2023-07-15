@@ -1,5 +1,6 @@
 package com.atguigu.yygh.hosp.controller;
 
+import com.atguigu.common.exception.YyghException;
 import com.atguigu.common.result.Result;
 import com.atguigu.yygh.common.utils.MD5;
 import com.atguigu.yygh.hosp.service.HospitalSetService;
@@ -94,5 +95,32 @@ public class HospitalSetController {
     public Result batchRemoveHospitalSet(@RequestBody List<Long> idList){
         boolean flag = hospitalSetService.removeByIds(idList);
         return flag?Result.ok():Result.fail();
+    }
+    //8.醫院設置鎖定和解鎖 欄位 status0解鎖 1鎖定
+    @PutMapping("lockHospitalSet/{id}/{status}")
+    public Result lockHospitalSet(@PathVariable Long id,
+                                  @PathVariable Integer status){
+        //根據id查詢醫院設置信息
+        HospitalSet hospitalSet=hospitalSetService.getById(id);
+        //設置狀態
+        hospitalSet.setStatus(status);
+        //調用方法
+        hospitalSetService.updateById(hospitalSet);
+        return Result.ok();
+    }
+    //9.發送簽名秘鑰
+    @PutMapping("sendKey/{id}")
+    public Result lockHospitalSet(@PathVariable Long id){
+        try{
+//        測試全局異常用
+//        int a=1/0;
+        }catch (Exception e){
+            throw new YyghException("失敗",201);
+        }
+        HospitalSet hospitalSet=hospitalSetService.getById(id);
+        String signKey = hospitalSet.getSignKey();
+        String hoscode = hospitalSet.getHoscode();
+        //TODO 發送短信
+        return Result.ok();
     }
 }
